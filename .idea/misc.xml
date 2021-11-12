@@ -4,12 +4,19 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/AndroidStudio/WeWorkOutTogeter/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogeter/app/src/main/res/layout/activity_view_store_detail_main.xml" value="0.25" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogeter/app/src/main/res/layout/fragment_home.xml" value="0.20104166666666667" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogeter/app/src/main/res/layout/fragment_info.xml" value="0.20104166666666667" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogeter/app/src/main/res/layout/fragment_map.xml" value="0.20104166666666667" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogeter/app/src/main/res/layout/fragment_profile.xml" value="0.20104166666666667" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogeter/app/src/main/res/layout/store_list_item.xml" value="0.22" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogeter/app/src/main/res/menu/nav_menu.xml" value="0.20104166666666667" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.173046875" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout-w936dp/activity_login.xml" value="0.15078125" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/activity_login.xml" value="0.20104166666666667" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/activity_sign_in.xml" value="0.35989583333333336" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/fragment_home.xml" value="0.20104166666666667" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/store_list_item.xml" value="0.35989583333333336" />
       </map>
     </option>
   </component>

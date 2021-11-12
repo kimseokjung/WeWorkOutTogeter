@@ -1,16 +1,15 @@
-package com.example.weworkouttogeter
+package com.example.weworkouttogether
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 import android.os.Bundle
-import com.example.weworkouttogeter.adater.NavigationViewPagerAdater
-import com.example.weworkouttogeter.databinding.ActivityMainBinding
-import com.example.weworkouttogeter.fragments.HomeFragment
-import com.example.weworkouttogeter.fragments.InfoFragment
-import com.example.weworkouttogeter.fragments.MapFragment
-import com.example.weworkouttogeter.fragments.ProfileFragment
-import com.ismaeldivita.chipnavigation.ChipNavigationBar
+import com.example.weworkouttogether.adater.NavigationViewPagerAdater
+import com.example.weworkouttogether.databinding.ActivityMainBinding
+import com.example.weworkouttogether.fragments.HomeFragment
+import com.example.weworkouttogether.fragments.InfoFragment
+import com.example.weworkouttogether.fragments.MapFragment
+import com.example.weworkouttogether.fragments.ProfileFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {

@@ -1,4 +1,4 @@
-package com.example.weworkouttogeter
+package com.example.weworkouttogether
 
 import androidx.appcompat.app.AppCompatActivity
 

@@ -1,15 +1,14 @@
-package com.example.weworkouttogeter.adater
-import com.google.android.material.bottomnavigation.BottomNavigationView
+package com.example.weworkouttogether.adater
 
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.example.weworkouttogeter.databinding.ActivityMainBinding
-import com.example.weworkouttogeter.fragments.HomeFragment
-import com.example.weworkouttogeter.fragments.InfoFragment
-import com.example.weworkouttogeter.fragments.MapFragment
-import com.example.weworkouttogeter.fragments.ProfileFragment
+import com.example.weworkouttogether.databinding.ActivityMainBinding
+import com.example.weworkouttogether.fragments.HomeFragment
+import com.example.weworkouttogether.fragments.InfoFragment
+import com.example.weworkouttogether.fragments.MapFragment
+import com.example.weworkouttogether.fragments.ProfileFragment
 
 
 class NavigationViewPagerAdater(fm : FragmentManager) : FragmentPagerAdapter(fm) {

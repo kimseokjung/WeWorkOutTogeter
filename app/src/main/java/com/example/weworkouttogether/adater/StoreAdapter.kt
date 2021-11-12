@@ -1,7 +1,6 @@
-package com.example.weworkouttogeter.adater
+package com.example.weworkouttogether.adater
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.weworkouttogeter.R
-import com.example.weworkouttogeter.datas.Store
-import kotlinx.android.synthetic.main.store_list_item.view.*
+import com.example.weworkouttogether.R
+import com.example.weworkouttogether.datas.Store
 
 class StoreAdapter(private val mContext: Context) :
     RecyclerView.Adapter<StoreAdapter.ViewHolder>() {
@@ -40,7 +38,6 @@ class StoreAdapter(private val mContext: Context) :
 
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val view : View = view
         private val tvStoreTitle : TextView = itemView.findViewById(R.id.tvStoreTile)
         private val tvStoreTel : TextView = itemView.findViewById(R.id.tvStoreTel)
         private val circleImageView : ImageView = itemView.findViewById(R.id.circleImageView)
@@ -51,8 +48,7 @@ class StoreAdapter(private val mContext: Context) :
             tvStoreTitle.text = store.name
             tvStoreTel.text = store.tel
             Glide.with(mContext).load(store.photoUrl).circleCrop().into(circleImageView)
-//           tvRoomPrice.text = "${room.getFormatPrice()}/${room.minPrice}"
-//           tvRoomType.text = "${room.type}｜방${room.room_num}개｜${room.getFormatFloor()}｜관리비 ${room.sub_price}만원"
+//
 
 
             val position = adapterPosition
