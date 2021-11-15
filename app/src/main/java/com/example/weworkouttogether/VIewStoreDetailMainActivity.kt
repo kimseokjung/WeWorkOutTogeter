@@ -17,11 +17,11 @@ class VIewStoreDetailMainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_store_detail_main)
-        setupEvents()
+        setUpEvents()
         setValues()
     }
 
-    override fun setupEvents() {
+    override fun setUpEvents() {
         //전화 퍼미션
         detailCallStore.setOnClickListener {
             val permissionListener = object : PermissionListener {

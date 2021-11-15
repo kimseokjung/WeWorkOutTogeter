@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="dialog_fullscreen" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:background">@android:color/transparent</item>
+
+    </style>
+</resources>
