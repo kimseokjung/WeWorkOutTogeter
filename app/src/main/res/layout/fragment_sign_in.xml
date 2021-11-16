@@ -4,12 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignInFragment">
+    android:animateLayoutChanges="true"
+    android:background="@color/white"
+    android:outlineProvider="none"
+    tools:context=".fragments.login.SignInFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="50dp"
+        android:padding="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -29,9 +33,9 @@
             android:layout_height="wrap_content"
             android:text="회원가입"
             android:textColor="@color/black"
+            android:textFontWeight="600"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textFontWeight="600"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,12 +44,14 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@color/black"
+            android:background="#131313"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <ScrollView
         android:layout_width="match_parent"
@@ -68,8 +74,9 @@
                 android:layout_height="wrap_content"
                 android:text="아이디"
                 android:textColor="#000000"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName2"
+                app:layout_constraintStart_toStartOf="@+id/editSignInID"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -79,9 +86,10 @@
                 android:layout_marginTop="15dp"
                 android:text="비밀번호"
                 android:textColor="#000000"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName2" />
+                app:layout_constraintTop_toBottomOf="@+id/editSignInID" />
 
             <TextView
                 android:id="@+id/textView7"
@@ -90,6 +98,7 @@
                 android:layout_marginTop="15dp"
                 android:text="비밀번호 확인"
                 android:textColor="#000000"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/editTextTextPassword"
                 app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
@@ -103,7 +112,8 @@
                 android:textColor="#000000"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/editTextTextPassword2"
-                app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword2" />
+                app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword2"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/textView9"
@@ -112,9 +122,10 @@
                 android:layout_marginTop="15dp"
                 android:text="이메일"
                 android:textColor="#000000"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName3"
-                app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
+                app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName"
+                app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
 
             <TextView
                 android:id="@+id/textView10"
@@ -123,12 +134,13 @@
                 android:layout_marginTop="15dp"
                 android:text="휴대폰"
                 android:textColor="#000000"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/editTextTextEmailAddress"
                 app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
 
             <EditText
-                android:id="@+id/editTextTextPersonName2"
+                android:id="@+id/editSignInID"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -149,13 +161,14 @@
                 android:layout_height="wrap_content"
                 android:padding="0dp"
                 android:text="중복확인"
-                app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName2"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/editSignInID"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/editTextTextPersonName2" />
+                app:layout_constraintTop_toTopOf="@+id/editSignInID" />
 
             <EditText
                 android:id="@+id/editTextTextPassword"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/rounded_corner"
@@ -170,7 +183,7 @@
 
             <EditText
                 android:id="@+id/editTextTextPassword2"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/rounded_corner"
@@ -184,8 +197,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
             <EditText
-                android:id="@+id/editTextTextPersonName3"
-                android:layout_width="0dp"
+                android:id="@+id/editTextTextPersonName"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/rounded_corner"
@@ -200,7 +213,7 @@
 
             <EditText
                 android:id="@+id/editTextTextEmailAddress"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/rounded_corner"
@@ -237,6 +250,7 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:text="인증번호 받기"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/editTextPhone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/editTextPhone" />
@@ -244,7 +258,7 @@
 
             <EditText
                 android:id="@+id/phoneCheck"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="5dp"
@@ -265,6 +279,7 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:text="인증번호 확인"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/phoneCheck"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/phoneCheck" />
@@ -276,13 +291,14 @@
                 android:layout_marginTop="15dp"
                 android:text="성별"
                 android:textColor="#000000"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/phoneCheck"
                 app:layout_constraintTop_toBottomOf="@+id/phoneCheck" />
 
 
             <RadioGroup
-                android:id="@+id/radioGroup"
+                android:id="@+id/rgSex"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -314,17 +330,20 @@
                 android:layout_height="150dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+                app:layout_constraintTop_toBottomOf="@+id/rgSex" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </ScrollView>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnSignInSubmit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="5dp"
         android:text="회원 가입"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
