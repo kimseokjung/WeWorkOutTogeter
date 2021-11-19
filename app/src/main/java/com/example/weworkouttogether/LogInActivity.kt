@@ -1,6 +1,7 @@
 package com.example.weworkouttogether
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,11 +10,16 @@ import com.example.weworkouttogether.databinding.ActivityLogInBinding
 import android.os.Process
 import androidx.fragment.app.FragmentTransaction
 import com.example.weworkouttogether.fragments.login.LoginFragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 
 class LogInActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityLogInBinding
     private lateinit var ft: FragmentTransaction
+    private lateinit var mFirebaseAuth: FirebaseAuth
+    private lateinit var mDatabaseRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +43,8 @@ class LogInActivity : BaseActivity(), View.OnClickListener {
     }
 
     override fun setValues() {
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        mDatabaseRef = FirebaseDatabase.getInstance().reference
         ft = supportFragmentManager.beginTransaction()
         val loginFrag: LoginFragment = LoginFragment()
         ft.add(R.id.fragLogin, LoginFragment()).commit()
@@ -88,6 +96,38 @@ class LogInActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+    fun signIn(email: String, pwd: String) {
+        mFirebaseAuth.createUserWithEmailAndPassword(email, pwd).addOnCompleteListener(this) {
+            if (it.isSuccessful) {
+                Log.e("TAG", "create User!!")
+                val user = mFirebaseAuth.currentUser
+                val userAccount = UserAccount(
+                    user?.email.toString(),
+                    pwd,
+                    user?.uid.toString()
+                )
+                mDatabaseRef.child("UserAccount").child(user?.uid.toString())
+                    .setValue(userAccount)
+
+                Toast.makeText(this, "회원가입 완료!", Toast.LENGTH_SHORT).show()
+
+
+            } else {
+                Toast.makeText(this, "회원가입 실패!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    fun logIn(email: String, pwd: String){
+        mFirebaseAuth.signInWithEmailAndPassword(email,pwd).addOnCompleteListener {
+            if(it.isSuccessful){
+              val myIntent = Intent(this, MainActivity::class.java)
+                startActivity(myIntent)
+                finish()
+            }else{
+                Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
 
 }

@@ -17,10 +17,12 @@
         <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout-w936dp/activity_login.xml" value="0.15078125" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/activity_log_in.xml" value="0.33" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/activity_login.xml" value="0.20104166666666667" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/activity_main.xml" value="0.2046875" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/activity_sign_in.xml" value="0.35989583333333336" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/fragment_home.xml" value="0.20104166666666667" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/fragment_login.xml" value="0.25" />
-        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/fragment_sign_in.xml" value="0.44398766700924974" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/fragment_sign_in.xml" value="0.4371807967313585" />
+        <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/sign_out_dialog_item.xml" value="0.2046875" />
         <entry key="..\:/AndroidStudio/WeWorkOutTogether/app/src/main/res/layout/store_list_item.xml" value="0.35989583333333336" />
       </map>
     </option>

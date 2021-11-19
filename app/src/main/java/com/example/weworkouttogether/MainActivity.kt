@@ -1,5 +1,6 @@
 package com.example.weworkouttogether
 
+import android.content.Intent
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
@@ -10,11 +11,13 @@ import com.example.weworkouttogether.fragments.HomeFragment
 import com.example.weworkouttogether.fragments.InfoFragment
 import com.example.weworkouttogether.fragments.MapFragment
 import com.example.weworkouttogether.fragments.ProfileFragment
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
     lateinit var nvpa: NavigationViewPagerAdater
+    private lateinit var mFirebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +25,7 @@ class MainActivity : BaseActivity() {
         setUpEvents()
         setValues()
 
+        mFirebaseAuth = FirebaseAuth.getInstance()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -63,15 +67,22 @@ class MainActivity : BaseActivity() {
     }
 
     override fun setUpEvents() {
-
-    }// 하단 탭이 눌렸을 때 화면을 전환하기 위해선 이벤트 처리하기 위해 BottomNavigationView 객체 생성
+        binding.mainTopBarSignOut.setOnClickListener{
+            logOut()
+        }
+    }
 
 
     override fun setValues() {
         nvpa = NavigationViewPagerAdater(supportFragmentManager)
 //        frg_container.adapter = nvpa
 
-
+    }
+    fun logOut(){
+        mFirebaseAuth.signOut()
+        val myIntent = Intent(this, LogInActivity::class.java)
+        startActivity(myIntent)
+        finish()
     }
 
 }
