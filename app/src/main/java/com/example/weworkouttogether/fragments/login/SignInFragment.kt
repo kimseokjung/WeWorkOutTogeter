@@ -1,5 +1,6 @@
 package com.example.weworkouttogether.fragments.login
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -9,17 +10,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.setFragmentResult
 import com.example.weworkouttogether.LogInActivity
 import com.example.weworkouttogether.R
+import com.example.weworkouttogether.UserAccount
 import com.example.weworkouttogether.databinding.FragmentSignInBinding
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -31,6 +35,15 @@ class SignInFragment : Fragment(), LogInActivity.OnBackPressedListener, View.OnC
     private lateinit var list: MutableList<Bundle>
     private lateinit var mFirebaseAuth: FirebaseAuth // 파이어베이스 인증
     private lateinit var mDatabaseRef: DatabaseReference // 실시간 데이터 베이스
+    private lateinit var mActivity: LogInActivity
+
+    private var idOK: Boolean = false
+    private var pwdOK1: Boolean = false
+    private var pwdOK2: Boolean = false
+    private var nameOK: Boolean = false
+    private var phoneOK: Boolean = false
+
+    private var gender: String = ""
 
 
     override fun onCreateView(
@@ -38,22 +51,41 @@ class SignInFragment : Fragment(), LogInActivity.OnBackPressedListener, View.OnC
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        init()
         binding = FragmentSignInBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        init()
+
         binding.btnSignUpBack.setOnClickListener(this)
         binding.btnSignInSubmit.setOnClickListener(this)
         binding.btnIdCheck.setOnClickListener(this)
         binding.editTextTextPassword.addTextChangedListener(TextWatcher(binding.editTextTextPassword))
         binding.editTextTextPassword2.addTextChangedListener(TextWatcher(binding.editTextTextPassword2))
+
+
+
+        binding.rgSex.setOnCheckedChangeListener { radioGrop, checkedId ->
+            when (checkedId) {
+                R.id.rbMan -> {
+                    gender = "남자"
+                }
+                R.id.rbWoman -> {
+                    gender = "여자"
+                }
+                R.id.rbNone -> {
+                    gender = "선택안함"
+                }
+                else -> {}
+            }
+        }
     }
 
     private fun init() {
-        mDatabaseRef = FirebaseDatabase.getInstance().reference
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        mActivity = LogInActivity()
 
         ft = activity?.supportFragmentManager!!.beginTransaction()
         list = mutableListOf()
@@ -66,22 +98,17 @@ class SignInFragment : Fragment(), LogInActivity.OnBackPressedListener, View.OnC
                 goToBack()
             }
             R.id.btnSignInSubmit -> { //회원가입 눌렀을때
-                Log.d("TAG", "btn submit")
-                val email = binding.editSignInID.text.toString()
-                val pwd = binding.tvPwdCheck.text.toString()
-                // 로그인 프레그먼트로 데이터 전송
-                // setFragmentResult("signUpKey", bundleOf("signUpData" to result))
+                signIn()
 
-                //firebase 인증 진행
-                LogInActivity().signIn(email,pwd)
-
-                goToBack()
             }
             R.id.btnIdCheck -> {
                 var isUsable: Boolean = false
+                val datas = mDatabaseRef.database
+                Log.e("TAG", "onClick: $datas")
                 if (isUsable) {
                     binding.tvIdCheck.text = "사용 할 수 있는 이메일입니다"
                     binding.tvIdCheck.setTextColor(Color.BLUE)
+                    idOK = true
                 } else {
                     binding.tvIdCheck.visibility = View.VISIBLE
                 }
@@ -107,6 +134,7 @@ class SignInFragment : Fragment(), LogInActivity.OnBackPressedListener, View.OnC
                     if (textValidate(s.toString().trim())) {
                         binding.tvPwdCheck.text = "Good!"
                         binding.tvPwdCheck.setTextColor(Color.BLUE)
+                        pwdOK1 = true
                     } else {
                         binding.tvPwdCheck.text = "비밀번호가 짧아요"
                         binding.tvPwdCheck.setTextColor(Color.RED)
@@ -118,6 +146,7 @@ class SignInFragment : Fragment(), LogInActivity.OnBackPressedListener, View.OnC
                     if (Pattern.matches(binding.editTextTextPassword.text.toString(), s)) {
                         pwdCheck2.text = "Good!"
                         pwdCheck2.setTextColor(Color.BLUE)
+                        pwdOK2 = true
                     } else {
                         pwdCheck2.text = "비밀번호가 일치하지 않아요"
                         pwdCheck2.setTextColor(Color.RED)
@@ -134,6 +163,46 @@ class SignInFragment : Fragment(), LogInActivity.OnBackPressedListener, View.OnC
         val pattern: Pattern = Pattern.compile(pwdPattern);
         val matcher: Matcher = pattern.matcher(str);
         return matcher.matches();
+    }
+
+    private fun signIn() {
+        val email = binding.editSignInID.text.toString().trim()
+        val pwd = binding.editTextTextPassword2.text.toString().trim()
+        val name = binding.editTextTextPersonName.text.toString().trim()
+        val phone = binding.editTextPhone.text.toString().trim()
+
+        Log.e("TAG", "onClick: $email")
+        Log.e("TAG", "onClick: $pwd")
+        Log.e("TAG", "onClick: $name")
+        Log.e("TAG", "onClick: $phone")
+        Log.e("TAG", "onClick: $gender")
+
+        mFirebaseAuth.createUserWithEmailAndPassword(email, pwd).addOnCompleteListener(mActivity) {
+            if (it.isSuccessful) {
+                Log.e("TAG", "create User!!")
+                //firebase 인증 진행
+                val user = mFirebaseAuth.currentUser
+                val userAccount = UserAccount(
+                    user?.uid.toString(),
+                    user?.email.toString(),
+                    pwd,
+                    name,
+                    phone,
+                    gender,
+                    false
+                )
+                val myRef = Firebase.database.reference
+                myRef.child("workout").child("UserAccount").child(user?.uid.toString())
+                    .setValue(userAccount)
+
+                Toast.makeText(activity, "회원가입 완료!", Toast.LENGTH_SHORT).show()
+                goToBack()
+
+            } else {
+                Log.e("TAG", "${it.exception}")
+                Toast.makeText(activity, "회원가입 실패!", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
 
