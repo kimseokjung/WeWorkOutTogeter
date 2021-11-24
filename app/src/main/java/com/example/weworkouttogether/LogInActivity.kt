@@ -12,6 +12,8 @@ import android.os.Process
 import android.widget.Button
 import androidx.fragment.app.FragmentTransaction
 import com.example.weworkouttogether.fragments.login.LoginFragment
+import com.example.weworkouttogether.utils.PreferenceUtil
+import com.example.weworkouttogether.utils.RoomDataUtil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -22,9 +24,18 @@ import kotlinx.android.synthetic.main.fragment_sign_in.*
 class LogInActivity : BaseActivity() {
     private lateinit var binding: ActivityLogInBinding
     private lateinit var ft: FragmentTransaction
+    private lateinit var pref: PreferenceUtil
+    private lateinit var db: RoomDataUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pref = PreferenceUtil(applicationContext)
+        db = RoomDataUtil(applicationContext)
+        // auto login check
+        if(pref.getData("autoLogin") == "yes"){
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
         setContentView(R.layout.activity_log_in)
 
         //binding 재정의
@@ -95,6 +106,8 @@ class LogInActivity : BaseActivity() {
             }
         }
     }
-
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 
 }

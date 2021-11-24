@@ -189,7 +189,7 @@ class SignInFragment : Fragment(), LogInActivity.OnBackPressedListener, View.OnC
                     name,
                     phone,
                     gender,
-                    false
+                    "false"
                 )
                 val myRef = Firebase.database.reference
                 myRef.child("workout").child("UserAccount").child(user?.uid.toString())

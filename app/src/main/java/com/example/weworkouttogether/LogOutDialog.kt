@@ -12,6 +12,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.DialogFragment
+import com.example.weworkouttogether.datas.UrlDatabase
+import com.example.weworkouttogether.utils.PreferenceUtil
+import com.example.weworkouttogether.utils.RoomDataUtil
 import com.google.firebase.auth.FirebaseAuth
 
 class LogOutDialog(activity: Activity){
@@ -22,13 +25,14 @@ class LogOutDialog(activity: Activity){
     private lateinit var btnCancel : Button
     private lateinit var listener: MyDialogOKClickListener
     private lateinit var mFirebaseAuth : FirebaseAuth
-    private lateinit var sharedPref : SharedPreferences
+    private lateinit var pref : PreferenceUtil
 
 
     fun start(content: String){
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dlg.setContentView(R.layout.sign_out_dialog_item)
         dlg.setCancelable(false)
+        pref = PreferenceUtil(mActivity)
 
         tvTitle = dlg.findViewById(R.id.tvLogOutTitle)
         tvTitle.text = content
@@ -50,16 +54,19 @@ class LogOutDialog(activity: Activity){
 
     }
     private fun logOut(){
-        sharedPref = mActivity.getSharedPreferences("admin",Context.MODE_PRIVATE)
-        val prefEditor : SharedPreferences.Editor = sharedPref.edit()
-        prefEditor.clear()
-        prefEditor.apply()
+//        sharedPref = mActivity.getSharedPreferences("login",Context.MODE_PRIVATE)
+//        val prefEditor : SharedPreferences.Editor = sharedPref.edit()
+//        prefEditor.clear()
+//        prefEditor.apply()
         mFirebaseAuth = FirebaseAuth.getInstance()
         mFirebaseAuth.signOut()
 
         Log.e("TAG", "logOut: $mActivity", )
         val intent = Intent(mActivity, LogInActivity::class.java)
         startActivity(mActivity,intent,null)
+        RoomDataUtil(mActivity).clearAll()
+        pref.setPref("autoLogin","no")
+        pref.deletePref()
         mActivity.finish()
     }
 

@@ -23,6 +23,7 @@ import com.example.weworkouttogether.MainActivity
 import com.example.weworkouttogether.R
 import com.example.weworkouttogether.Storage
 import com.example.weworkouttogether.databinding.FragmentLoginBinding
+import com.example.weworkouttogether.utils.PreferenceUtil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -38,22 +39,20 @@ import kotlin.concurrent.thread
 class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private lateinit var ft: FragmentTransaction
-    private lateinit var fm: FragmentManager
     private lateinit var mFirebaseAuth: FirebaseAuth
-    private lateinit var mContext: Context
+    private lateinit var pref: PreferenceUtil
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        result = arguments?.getString("signupData").toString()
         binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mContext = LogInActivity()
+        pref = PreferenceUtil(this.requireContext())
         ft = activity?.supportFragmentManager!!.beginTransaction()
         mFirebaseAuth = FirebaseAuth.getInstance()
 
@@ -84,6 +83,7 @@ class LoginFragment : Fragment() {
             if (it.isSuccessful) {
                 val user = mFirebaseAuth.currentUser
                 if (user != null) {
+                    pref.setPref("autoLogin", "yes")
                     setUserData()
                     thread(start = true) {
                         Thread.sleep(1000L)
@@ -102,22 +102,30 @@ class LoginFragment : Fragment() {
     private fun setUserData() {
         val user = Firebase.auth.currentUser
         var mDatabase = FirebaseDatabase.getInstance().reference
-        val sharedPreference = activity?.getSharedPreferences("admin", MODE_PRIVATE)
-        val editor = sharedPreference?.edit()
 
         mDatabase.child("workout").child("UserAccount").child(user?.uid.toString()).get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    val admin = it.result?.child("admin")?.value as Boolean
-                    if (admin) {
+                    val admin = it.result?.child("admin")?.value.toString()
+                    // 관리자인가?
+                    if (admin == "true") {
                         Log.i("TAG", "Got value $admin")
-                        editor?.putBoolean("admin", admin)
-                        editor?.apply()
+                        pref.setPref("admin", admin)
+                        // idToken 저장
+                        pref.setPref("uid",it.result?.child("idToken")!!.value.toString())
+                        // 이메일저장
+                        pref.setPref("email", it.result?.child("email")!!.value.toString())
+                    } else {
+                        //일반 유져면
+                        pref.setPref("uid",it.result?.child("idToken")!!.value.toString())
+                        pref.setPref("email", it.result?.child("email")!!.value.toString())
                     }
                     Log.i("TAG", "Got value ${it.result}")
                 }
             }.addOnFailureListener { Log.e("TAG", "Fail ${it.message}") }
+
     }
+
 
 
     private fun sinUpAnim() {
@@ -133,4 +141,5 @@ class LoginFragment : Fragment() {
 //        frag.animation = anim
 //        frag.visibility = View.VISIBLE
     }
+
 }

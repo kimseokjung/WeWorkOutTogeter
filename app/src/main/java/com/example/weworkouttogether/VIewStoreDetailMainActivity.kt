@@ -5,14 +5,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.example.weworkouttogether.datas.Store
+import com.example.weworkouttogether.datas.Blog
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import kotlinx.android.synthetic.main.activity_view_store_detail_main.*
 
 class VIewStoreDetailMainActivity : BaseActivity() {
 
-    private lateinit var mStoreData: Store
+    private lateinit var mBlogData: Blog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +26,7 @@ class VIewStoreDetailMainActivity : BaseActivity() {
         detailCallStore.setOnClickListener {
             val permissionListener = object : PermissionListener {
                 override fun onPermissionGranted() {
-                    val myUri = Uri.parse("tel:${mStoreData.tel}")
+                    val myUri = Uri.parse("tel:")
                     val myIntent = Intent(Intent.ACTION_CALL, myUri)
                     startActivity(myIntent)
                 }
@@ -46,12 +46,12 @@ class VIewStoreDetailMainActivity : BaseActivity() {
 
     override fun setValues() {
 
-        mStoreData = intent.getSerializableExtra("datas") as Store
-
-        Glide.with(mContext).load(mStoreData.photoUrl).into(detailCimg)
-
-        detailStoreName.text = mStoreData.name
-        detailTelNum.text = mStoreData.tel
+//        mBlogData = intent.getSerializableExtra("datas") as Blog
+//
+//        Glide.with(mContext).load(mBlogData.photoUrl).into(detailCimg)
+//
+//        detailStoreName.text = mBlogData.name
+//        detailTelNum.text = mBlogData.tel
 
     }
 }

@@ -15,7 +15,7 @@ import com.google.firebase.database.IgnoreExtraProperties
      var name:String,
      var phone:String,
      var gender:String,
-     var admin:Boolean
+     var admin:String
 
 
  ){
