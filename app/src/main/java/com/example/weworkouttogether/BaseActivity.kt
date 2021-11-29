@@ -1,14 +1,10 @@
 package com.example.weworkouttogether
 
-import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.weworkouttogether.datas.UrlDatabase
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
+import com.example.weworkouttogether.data.UrlDatabase
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -19,7 +15,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     open fun clearAll(context: Context){
         // 로그아웃시 data table을 비운다
-        var db = UrlDatabase.getInstance(context) as UrlDatabase
+        var db = UrlDatabase.getInstance() as UrlDatabase
         try {
             db.postUrlDao().clearAll()
             Log.d("TAG", "onDestroy: data clear")

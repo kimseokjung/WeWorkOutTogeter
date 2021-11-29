@@ -2,10 +2,10 @@ package com.example.weworkouttogether.utils
 
 import android.content.Context
 import android.util.Log
-import com.example.weworkouttogether.datas.UrlDatabase
+import com.example.weworkouttogether.data.UrlDatabase
 
-class RoomDataUtil(context: Context) {
-    private var db: UrlDatabase = UrlDatabase.getInstance(context) as UrlDatabase
+class RoomDataUtil() {
+    private var db: UrlDatabase = UrlDatabase.getInstance() as UrlDatabase
 
     fun clearAll(){
         // 로그아웃시 data table을 비운다

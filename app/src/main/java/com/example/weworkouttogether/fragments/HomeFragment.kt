@@ -8,33 +8,46 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.weworkouttogether.MainActivity
+import com.example.weworkouttogether.App
 import com.example.weworkouttogether.R
 import com.example.weworkouttogether.VIewStoreDetailMainActivity
 import com.example.weworkouttogether.adater.PostAdapter
 import com.example.weworkouttogether.databinding.FragmentHomeBinding
-import com.example.weworkouttogether.datas.PostUrl
-import com.example.weworkouttogether.datas.UrlDatabase
+import com.example.weworkouttogether.data.PageViewModel
+import com.example.weworkouttogether.data.PostUrl
+import com.example.weworkouttogether.data.UrlDatabase
+import com.example.weworkouttogether.data.ViewModelFactory
 import com.example.weworkouttogether.utils.PreferenceUtil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 
-class HomeFragment : Fragment(), View.OnClickListener {
+class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var storeAdapter: PostAdapter
-    private val storeDatas = mutableListOf<PostUrl>()
+    private lateinit var mViewLifecycleOwner: LifecycleOwner
+    private lateinit var postAdapter: PostAdapter
+    private val postDatas = mutableListOf<PostUrl>()
+    private lateinit var viewModel: PageViewModel
     private lateinit var mFirebaseAuth: FirebaseAuth
     private lateinit var mDatabase: DatabaseReference
     private lateinit var pref: PreferenceUtil
     private lateinit var db: UrlDatabase
-    private lateinit var postData: MutableList<PostUrl>
+
+    private val scope = CoroutineScope(Dispatchers.Default)
 
     // thesem blog page url
     var baseUri =
@@ -48,21 +61,41 @@ class HomeFragment : Fragment(), View.OnClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        this.mViewLifecycleOwner = this
+        this.binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadData()
+
+        this.viewModel =
+            ViewModelProvider(this, ViewModelFactory(App.instance))
+                .get(PageViewModel::class.java)
+        this.postAdapter = PostAdapter()
+        this.binding.homePeedList.layoutManager = LinearLayoutManager(context)
+        this.binding.homePeedList.adapter = this.postAdapter
 
         mFirebaseAuth = FirebaseAuth.getInstance()
         mDatabase = FirebaseDatabase.getInstance().reference
         pref = PreferenceUtil(requireContext().applicationContext)
-        db = UrlDatabase.getInstance(requireActivity().applicationContext) as UrlDatabase
-        postData = db.postUrlDao().getAll()
+        db = UrlDatabase.getInstance() as UrlDatabase
         initRecycler()
+        scope.launch {
+            loadData()
+            showData()
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            postAdapter.loadStateFlow.collectLatest { loadState ->
+                binding.progressBarLayout.isVisible = loadState.refresh is LoadState.Loading
+            }
+
+        }
+        binding.homeRefresh.setOnRefreshListener {
+            postAdapter.refresh()
+            binding.homeRefresh.isRefreshing = false
+        }
 
 
         binding.homeFloating.setOnClickListener(this@HomeFragment)
@@ -73,48 +106,36 @@ class HomeFragment : Fragment(), View.OnClickListener {
             binding.homeFloating.visibility = View.VISIBLE
         }
 
-        binding.homePeedList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
+    }
 
-                if (!binding.homePeedList.canScrollVertically(1)) {
-                    Log.d("TAG", "onScrolled: 어디냐")
-                    binding.progressBar.visibility = View.VISIBLE
-                    pages + 2
-                    maxPages + 2
-                    loadData()
-                    initRecycler()
 
-                }
-            }
-        })
-
+    private suspend fun showData() {
+        viewModel.data.collectLatest {
+            postAdapter.submitData(it)
+        }
     }
 
     @Synchronized
     fun loadData() {
         synchronized(this) {
-            while (pages <= maxPages) {
-                var t = Thread(UrlRum(baseUri, pages, requireContext()))
-                // thread실행
-                t.start()
-                // thread가 끝날때 까지 main thread 대기
-                t.join()
-                // 다음 page 크롤링
-                pages++
-            }
+
+            var t = Thread(UrlRum(baseUri, pages, requireContext()))
+            // thread실행
+            t.start()
+            // thread가 끝날때 까지 main thread 대기
+            t.join()
+            // 다음 page 크롤링
+
         }
-        binding.progressBar.visibility = View.GONE
+
         Log.d("TAG", "크롤링 끝")
     }
 
 
     private fun initRecycler() {
-        storeAdapter = PostAdapter(requireActivity())
-        homePeedList.layoutManager = LinearLayoutManager(context)
-        homePeedList.adapter = storeAdapter
-        storeDatas.apply {
-            for (e in postData) {
+
+        postDatas.apply {
+            for (e in this) {
                 add(
                     PostUrl(
                         null,
@@ -124,9 +145,9 @@ class HomeFragment : Fragment(), View.OnClickListener {
                     )
                 )
             }
-            storeAdapter.datas = storeDatas
+            postAdapter.datas = postDatas
 
-            storeAdapter.setOnItemClickListener(object : PostAdapter.OnItemClickListener {
+            postAdapter.setOnItemClickListener(object : PostAdapter.OnItemClickListener {
                 override fun onClickListener(v: View, data: PostUrl, position: Int) {
                     val storeIntent =
                         Intent(context, VIewStoreDetailMainActivity::class.java).apply {
@@ -136,7 +157,7 @@ class HomeFragment : Fragment(), View.OnClickListener {
                 }
 
             })
-            storeAdapter.notifyDataSetChanged()
+            postAdapter.notifyDataSetChanged()
         }
     }
 
@@ -151,7 +172,7 @@ class HomeFragment : Fragment(), View.OnClickListener {
 //                postTitle = doc.select("div.post_album_view_s966 div ul li a div.area_text strong")
 //                postImg = doc.select("div.post_album_view_s966 div ul li a div.area_thumb img")
 
-                var db = UrlDatabase.getInstance(context)
+                var db = UrlDatabase.getInstance()
 
                 for (e in elements) {
                     var url = e.absUrl("href")
@@ -176,6 +197,7 @@ class HomeFragment : Fragment(), View.OnClickListener {
 
     }
 
+
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.homeFloating -> {
@@ -184,4 +206,5 @@ class HomeFragment : Fragment(), View.OnClickListener {
             else -> {}
         }
     }
+
 }

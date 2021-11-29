@@ -2,17 +2,13 @@ package com.example.weworkouttogether
 
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.util.Log
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
-import androidx.fragment.app.DialogFragment
-import com.example.weworkouttogether.datas.UrlDatabase
 import com.example.weworkouttogether.utils.PreferenceUtil
 import com.example.weworkouttogether.utils.RoomDataUtil
 import com.google.firebase.auth.FirebaseAuth
@@ -64,7 +60,7 @@ class LogOutDialog(activity: Activity){
         Log.e("TAG", "logOut: $mActivity", )
         val intent = Intent(mActivity, LogInActivity::class.java)
         startActivity(mActivity,intent,null)
-        RoomDataUtil(mActivity).clearAll()
+        RoomDataUtil().clearAll()
         pref.setPref("autoLogin","no")
         pref.deletePref()
         mActivity.finish()

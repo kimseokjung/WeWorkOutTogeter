@@ -30,7 +30,7 @@ class LogInActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pref = PreferenceUtil(applicationContext)
-        db = RoomDataUtil(applicationContext)
+        db = RoomDataUtil()
         // auto login check
         if(pref.getData("autoLogin") == "yes"){
             startActivity(Intent(this, MainActivity::class.java))

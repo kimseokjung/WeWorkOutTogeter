@@ -1,4 +1,4 @@
-package com.example.weworkouttogether.datas
+package com.example.weworkouttogether.data
 
 import java.io.Serializable
 

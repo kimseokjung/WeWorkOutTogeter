@@ -1,16 +1,12 @@
 package com.example.weworkouttogether
 
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
 import android.widget.Toast
-import androidx.room.Delete
 import com.example.weworkouttogether.adater.NavigationViewPagerAdater
 import com.example.weworkouttogether.databinding.ActivityMainBinding
-import com.example.weworkouttogether.datas.PostUrl
-import com.example.weworkouttogether.datas.UrlDatabase
 import com.example.weworkouttogether.fragments.HomeFragment
 import com.example.weworkouttogether.fragments.InfoFragment
 import com.example.weworkouttogether.fragments.MapFragment
@@ -20,8 +16,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.*
-import org.jsoup.Jsoup
-import org.jsoup.select.Elements
+import com.example.weworkouttogether.utils.ForcedTerminationService
+
+import android.content.Intent
+
+
+
 
 class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -32,8 +32,9 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startService(Intent(this, ForcedTerminationService::class.java))
         setContentView(R.layout.activity_main)
-        db = RoomDataUtil(applicationContext)
+        db = RoomDataUtil()
 //        setUserData()
 
 
@@ -154,6 +155,7 @@ class MainActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         db.clearAll()
+        Log.d("TAG", "onDestroy: data clear!!")
     }
 
 }

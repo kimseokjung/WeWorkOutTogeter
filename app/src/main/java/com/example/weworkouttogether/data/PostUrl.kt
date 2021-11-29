@@ -1,4 +1,4 @@
-package com.example.weworkouttogether.datas
+package com.example.weworkouttogether.data
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

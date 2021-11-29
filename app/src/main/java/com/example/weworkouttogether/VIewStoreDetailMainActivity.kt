@@ -4,8 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import com.bumptech.glide.Glide
-import com.example.weworkouttogether.datas.Blog
+import com.example.weworkouttogether.data.Blog
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import kotlinx.android.synthetic.main.activity_view_store_detail_main.*
