@@ -1,6 +1,5 @@
 package com.example.weworkouttogether
 
-
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
@@ -19,9 +18,6 @@ import kotlinx.coroutines.*
 import com.example.weworkouttogether.utils.ForcedTerminationService
 
 import android.content.Intent
-
-
-
 
 class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding

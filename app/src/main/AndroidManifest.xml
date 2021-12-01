@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".VIewStoreDetailMainActivity"
+            android:name=".ViewStoreDetailMainActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

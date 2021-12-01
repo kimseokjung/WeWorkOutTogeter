@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.weworkouttogether.App
 
-@Database(entities = [PostUrl::class], version = 2, exportSchema = false)
+@Database(entities = [PostSingleItem::class], version = 2, exportSchema = false)
 abstract class UrlDatabase : RoomDatabase() {
     abstract fun postUrlDao(): PostUrlDao
 

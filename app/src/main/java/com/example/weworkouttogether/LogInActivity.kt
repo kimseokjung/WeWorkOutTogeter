@@ -31,6 +31,11 @@ class LogInActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         pref = PreferenceUtil(applicationContext)
         db = RoomDataUtil()
+        //시작할때 db 초기화 "posts"
+        synchronized(this){
+            db.clearAll()
+            Log.d("TAG", "onCreate: 시작 데이터 삭제")
+        }
         // auto login check
         if(pref.getData("autoLogin") == "yes"){
             startActivity(Intent(this, MainActivity::class.java))

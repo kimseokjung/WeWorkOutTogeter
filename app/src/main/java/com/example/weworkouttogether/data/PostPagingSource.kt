@@ -3,20 +3,20 @@ package com.example.weworkouttogether.data
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 
-open class PostPagingSource(private val  postUrlDao: PostUrlDao): PagingSource<Int,PostUrl>(){
+open class PostPagingSource(private val  postUrlDao: PostUrlDao): PagingSource<Int,PostSingleItem>(){
 
     companion object{
         const val INIT_PAGE_INDEX = 0
     }
 
-    override fun getRefreshKey(state: PagingState<Int, PostUrl>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, PostSingleItem>): Int? {
         return state.anchorPosition?.let {
             state.closestPageToPosition(it)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PostUrl> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PostSingleItem> {
         val position = params.key ?: INIT_PAGE_INDEX
         val loadData = postUrlDao.getPage(position,params.loadSize)
 

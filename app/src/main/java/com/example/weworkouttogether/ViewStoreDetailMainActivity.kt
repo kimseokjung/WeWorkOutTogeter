@@ -9,7 +9,7 @@ import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import kotlinx.android.synthetic.main.activity_view_store_detail_main.*
 
-class VIewStoreDetailMainActivity : BaseActivity() {
+class ViewStoreDetailMainActivity : BaseActivity() {
 
     private lateinit var mBlogData: Blog
 

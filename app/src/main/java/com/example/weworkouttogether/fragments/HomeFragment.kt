@@ -1,46 +1,35 @@
 package com.example.weworkouttogether.fragments
 
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weworkouttogether.App
 import com.example.weworkouttogether.R
-import com.example.weworkouttogether.VIewStoreDetailMainActivity
-import com.example.weworkouttogether.adater.PostAdapter
+import com.example.weworkouttogether.adater.PostSelectionAdapter
+import com.example.weworkouttogether.data.*
 import com.example.weworkouttogether.databinding.FragmentHomeBinding
-import com.example.weworkouttogether.data.PageViewModel
-import com.example.weworkouttogether.data.PostUrl
-import com.example.weworkouttogether.data.UrlDatabase
-import com.example.weworkouttogether.data.ViewModelFactory
 import com.example.weworkouttogether.utils.PreferenceUtil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.android.synthetic.main.post_list_item.*
+import kotlinx.coroutines.*
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 
 class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var mViewLifecycleOwner: LifecycleOwner
-    private lateinit var postAdapter: PostAdapter
-    private val postDatas = mutableListOf<PostUrl>()
+    private lateinit var postSelectionAdapter: PostSelectionAdapter
+    private val postDatas = mutableListOf<PostSelectionItem>()
     private lateinit var viewModel: PageViewModel
     private lateinit var mFirebaseAuth: FirebaseAuth
     private lateinit var mDatabase: DatabaseReference
@@ -73,32 +62,42 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
         this.viewModel =
             ViewModelProvider(this, ViewModelFactory(App.instance))
                 .get(PageViewModel::class.java)
-        this.postAdapter = PostAdapter()
-        this.binding.homePeedList.layoutManager = LinearLayoutManager(context)
-        this.binding.homePeedList.adapter = this.postAdapter
+        this.postSelectionAdapter = PostSelectionAdapter()
+        this.binding.homePeedList.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        this.binding.homePeedList.adapter = postSelectionAdapter
 
         mFirebaseAuth = FirebaseAuth.getInstance()
         mDatabase = FirebaseDatabase.getInstance().reference
-        pref = PreferenceUtil(requireContext().applicationContext)
+        pref = PreferenceUtil(App.instance)
         db = UrlDatabase.getInstance() as UrlDatabase
-        initRecycler()
-        scope.launch {
-            loadData()
-            showData()
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            postAdapter.loadStateFlow.collectLatest { loadState ->
-                binding.progressBarLayout.isVisible = loadState.refresh is LoadState.Loading
-            }
 
-        }
-        binding.homeRefresh.setOnRefreshListener {
-            postAdapter.refresh()
-            binding.homeRefresh.isRefreshing = false
+        //init coroutine
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.progressBarLayout.visibility = View.VISIBLE
+            withContext(scope.coroutineContext) {
+                // data를 받아온다
+                initRecycler()
+            }
+            delay(1000)
+            postSelectionAdapter.notifyDataSetChanged()
+            binding.progressBarLayout.visibility = View.GONE
         }
 
 
         binding.homeFloating.setOnClickListener(this@HomeFragment)
+
+        // Post item 클릭 리스너
+//        postSingleAdapter.setOnItemClickListener(object : PostSingleAdapter.OnItemClickListener {
+//            override fun onClickListener(v: View, data: PostSingleItem, position: Int) {
+//                val storeIntent =
+//                    Intent(context, VIewStoreDetailMainActivity::class.java).apply {
+//                        putExtra("datas", data.postUrl)
+//                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                    }.run { startActivity(this) }
+//            }
+
+//        })
 
         val isAdmin = pref.getData("admin")
         Log.e("TAG", "initRecycler: $isAdmin")
@@ -108,69 +107,59 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
 
     }
 
+    private fun createPilatesData(): MutableList<PostSingleItem> {
+        var singleList = mutableListOf<PostSingleItem>()
+        try {
+            var doc = Jsoup.connect(baseUri).get()
+            var pilates = doc.select("div.post_album_view_s966 div ul li a")
 
-    private suspend fun showData() {
-        viewModel.data.collectLatest {
-            postAdapter.submitData(it)
+            for (i in 0..5) {
+                var e = pilates[i]
+                var url = e.absUrl("href")
+                var title = e.select("div.area_text strong").text()
+                var src = e.select("div.area_thumb img").first()
+                var photoUrl = src.absUrl("src")
+
+                Log.d("TAG", url)
+                Log.d("TAG", title)
+                Log.d("TAG", photoUrl)
+                try {
+                    singleList.add(PostSingleItem(null, url, title, photoUrl))
+
+                } catch (e: Exception) {
+                    Log.e("TAG", "Pilates data : ${e.toString()}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("TAG", "Pilates last : ${e.toString()}")
         }
-    }
-
-    @Synchronized
-    fun loadData() {
-        synchronized(this) {
-
-            var t = Thread(UrlRum(baseUri, pages, requireContext()))
-            // thread실행
-            t.start()
-            // thread가 끝날때 까지 main thread 대기
-            t.join()
-            // 다음 page 크롤링
-
-        }
-
-        Log.d("TAG", "크롤링 끝")
+        return singleList
     }
 
 
     private fun initRecycler() {
-
-        postDatas.apply {
-            for (e in this) {
-                add(
-                    PostUrl(
-                        null,
-                        e.postUrl,
-                        e.postTitle,
-                        e.postPhoto
-                    )
-                )
+        try {
+            for (i in 0..5) {
+                Log.e("TAG", "initRecycler: ${createPilatesData()}")
+                postDatas.add(PostSelectionItem("Selection $i", createPilatesData()))
             }
-            postAdapter.datas = postDatas
-
-            postAdapter.setOnItemClickListener(object : PostAdapter.OnItemClickListener {
-                override fun onClickListener(v: View, data: PostUrl, position: Int) {
-                    val storeIntent =
-                        Intent(context, VIewStoreDetailMainActivity::class.java).apply {
-                            putExtra("datas", data.postUrl)
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        }.run { startActivity(this) }
-                }
-
-            })
-            postAdapter.notifyDataSetChanged()
+        } catch (e: Exception) {
+            Log.e("TAG", "init last : ${e.toString()}")
         }
+        Log.d("TAG", "크롤링 끝")
+        postSelectionAdapter.datas = postDatas
+
     }
 
-    class UrlRum(var baseUrl: String, var pages: Int, var context: Context) : Runnable {
+
+    inner class UrlRum() : Runnable {
         lateinit var elements: Elements
 
         @Synchronized
         override fun run() {
             try {
-                var doc = Jsoup.connect(baseUrl + pages).get()
+                var doc = Jsoup.connect(baseUri).get()
                 elements = doc.select("div.post_album_view_s966 div ul li a")
-//                postTitle = doc.select("div.post_album_view_s966 div ul li a div.area_text strong")
-//                postImg = doc.select("div.post_album_view_s966 div ul li a div.area_thumb img")
 
                 var db = UrlDatabase.getInstance()
 
@@ -184,7 +173,8 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
                     Log.d("TAG", title)
                     Log.d("TAG", photoUrl)
                     try {
-                        db?.postUrlDao()!!.insertUrl(PostUrl(null, url, title, photoUrl))
+                        db?.postUrlDao()!!.insertUrl(PostSingleItem(null, url, title, photoUrl))
+
                     } catch (e: Exception) {
                         Log.e("TAG", e.toString())
                     }
