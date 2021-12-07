@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
@@ -19,8 +20,8 @@ import com.example.weworkouttogether.utils.PreferenceUtil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.post_list_item.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
@@ -39,8 +40,11 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     // thesem blog page url
-    var baseUri =
+    var pilatesUri =
         "https://blog.naver.com/PostList.naver?from=postList&blogId=thesemkorea&parentCategoryNo=9&currentPage="
+    var yogaUri =
+        "https://blog.naver.com/PostList.naver?from=postList&blogId=thesemkorea&categoryNo=10&parentCategoryNo=10&currentPage="
+
     var pages = 1
     var maxPages = 2
 
@@ -63,9 +67,10 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
             ViewModelProvider(this, ViewModelFactory(App.instance))
                 .get(PageViewModel::class.java)
         this.postSelectionAdapter = PostSelectionAdapter()
-        this.binding.homePeedList.layoutManager =
+        binding.homePeedList.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        this.binding.homePeedList.adapter = postSelectionAdapter
+        binding.homePeedList.setHasFixedSize(true)
+        binding.homePeedList.adapter = postSelectionAdapter
 
         mFirebaseAuth = FirebaseAuth.getInstance()
         mDatabase = FirebaseDatabase.getInstance().reference
@@ -84,8 +89,9 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
             binding.progressBarLayout.visibility = View.GONE
         }
 
+        binding.homeFloating.setOnClickListener(this)
+        binding.homePeedList.setOnClickListener(this)
 
-        binding.homeFloating.setOnClickListener(this@HomeFragment)
 
         // Post item 클릭 리스너
 //        postSingleAdapter.setOnItemClickListener(object : PostSingleAdapter.OnItemClickListener {
@@ -110,7 +116,7 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
     private fun createPilatesData(): MutableList<PostSingleItem> {
         var singleList = mutableListOf<PostSingleItem>()
         try {
-            var doc = Jsoup.connect(baseUri).get()
+            var doc = Jsoup.connect(pilatesUri).get()
             var pilates = doc.select("div.post_album_view_s966 div ul li a")
 
             for (i in 0..5) {
@@ -152,16 +158,17 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
     }
 
 
+
     inner class UrlRum() : Runnable {
         lateinit var elements: Elements
 
         @Synchronized
         override fun run() {
             try {
-                var doc = Jsoup.connect(baseUri).get()
+                var doc = Jsoup.connect(pilatesUri).get()
                 elements = doc.select("div.post_album_view_s966 div ul li a")
 
-                var db = UrlDatabase.getInstance()
+                var db = Firebase.database.getReference("workout")
 
                 for (e in elements) {
                     var url = e.absUrl("href")
@@ -172,8 +179,17 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
                     Log.d("TAG", url)
                     Log.d("TAG", title)
                     Log.d("TAG", photoUrl)
+                    var insertData = hashMapOf(
+                        "url" to url,
+                        "title" to title,
+                        "src" to src,
+                        "photoUrl" to photoUrl
+                    )
                     try {
-                        db?.postUrlDao()!!.insertUrl(PostSingleItem(null, url, title, photoUrl))
+                        db.child("post").child("yoga").child(title)
+                            .setValue(insertData)
+                            .addOnSuccessListener { Log.d("firebase", "Yoga Data add Success!!") }
+                            .addOnFailureListener { Log.d("firebase", "Yoga Data add Fail!!") }
 
                     } catch (e: Exception) {
                         Log.e("TAG", e.toString())
@@ -189,8 +205,12 @@ class HomeFragment : Fragment(), View.OnClickListener, LifecycleOwner {
 
 
     override fun onClick(v: View?) {
+        Log.d("TAG", "onClick: $v")
         when (v?.id) {
             R.id.homeFloating -> {
+                Toast.makeText(this.context, "More add", Toast.LENGTH_SHORT).show()
+            }
+            R.id.homePeedList -> {
 
             }
             else -> {}

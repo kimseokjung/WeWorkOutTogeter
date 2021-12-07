@@ -13,20 +13,22 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weworkouttogether.R
 import com.example.weworkouttogether.ViewStoreDetailMainActivity
+import com.example.weworkouttogether.fragments.HomeFragment
 import com.gun0912.tedpermission.provider.TedPermissionProvider.context
+import kotlinx.android.synthetic.main.post_list_item.view.*
 
 
 class PostSelectionAdapter() : RecyclerView.Adapter<PostSelectionAdapter.ViewHolder>() {
-
+    lateinit var view: View
     var datas = mutableListOf<PostSelectionItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        var view = LayoutInflater.from(App.instance).inflate(R.layout.post_list_item, parent, false)
+        view = LayoutInflater.from(App.instance).inflate(R.layout.post_list_item, parent, false)
         return ViewHolder(view)
     }
 
     interface OnItemClickListener {
-        fun onClickListener(v: View, data: PostSingleItem, position: Int)
+        fun onClickListener(v: View, data: MutableList<PostSingleItem>, position: Int)
     }
 
     private var listener: OnItemClickListener? = null
@@ -51,22 +53,28 @@ class PostSelectionAdapter() : RecyclerView.Adapter<PostSelectionAdapter.ViewHol
             var postSelectionItem = selectItem.singItemList
             tvCategoryTitle.text = selectItem.headerTitle
             recycleSelection.setHasFixedSize(true)
-            recycleSelection.layoutManager = LinearLayoutManager(App.instance,LinearLayoutManager.HORIZONTAL,false)
+            recycleSelection.layoutManager =
+                LinearLayoutManager(App.instance, LinearLayoutManager.HORIZONTAL, false)
             var postSingleAdapter = PostSingleAdapter(postSelectionItem)
             recycleSelection.adapter = postSingleAdapter
-            btnMore.setOnClickListener {
-                Toast.makeText(it.context, "More Click", Toast.LENGTH_SHORT).show()
+
+            val position = bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                itemView.setOnClickListener {
+                    listener?.onClickListener(itemView, postSelectionItem, position)
+
+                }
             }
-
-
         }
-
 
 
     }
 
 
 }
+
+
+
 //    override fun onBindViewHolder(itemRowHolder: ItemRowHolder, i: Int) {
 //        val sectionName: String = dataList!![i].getHeaderTitle()
 //        val singleSectionItems: ArrayList<*> = dataList[i].getSingItemList()

@@ -5,7 +5,8 @@
     android:layout_width="180dp"
     android:layout_height="wrap_content"
     android:paddingHorizontal="15dp"
-    android:paddingVertical="15dp">
+    android:paddingVertical="15dp"
+    android:id="@+id/storePost">
 
 
     <ImageView

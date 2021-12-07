@@ -9,6 +9,9 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
 
     <application
 
@@ -20,6 +23,11 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/Theme.WeWorkOutTogether">
+
+        <meta-data
+        android:name="com.naver.maps.map.CLIENT_ID"
+        android:value="ajr7ph296r" />
+
         <service android:name=".utils.ForcedTerminationService"
             android:stopWithTask="false"/>
         <activity
