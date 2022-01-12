@@ -29,7 +29,8 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         startService(Intent(this, ForcedTerminationService::class.java))
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         db = RoomDataUtil()
 //        setUserData()
 
@@ -38,8 +39,7 @@ class MainActivity : BaseActivity() {
         setValues()
 
         mFirebaseAuth = FirebaseAuth.getInstance()
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
 
 
         var bnvMain = findViewById<BottomNavigationView>(R.id.bnv_main)

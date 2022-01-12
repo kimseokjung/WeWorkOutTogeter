@@ -73,7 +73,7 @@ class LoginFragment : Fragment() {
         binding.btnLogin.setOnClickListener {
             val email = binding.loginId.text.toString().trim()
             val pwd = binding.loginPwd.text.toString().trim()
-            logIn(email, pwd)
+            if(email.isNotEmpty() || pwd.isNotEmpty()) logIn(email, pwd) // null 처리
         }
 
     }

@@ -41,8 +41,6 @@ class LogInActivity : BaseActivity() {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
-        setContentView(R.layout.activity_log_in)
-
         //binding 재정의
         binding = ActivityLogInBinding.inflate(layoutInflater)
         setContentView(binding.root)
